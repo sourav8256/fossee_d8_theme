@@ -1,0 +1,115 @@
+
+<div class="container">
+    <header class="tm-site-header">
+        
+        <!-- <h1 class="tm-site-name">Shelf</h1>
+        <p class="tm-site-description">Your Online Bookstore</p> -->
+        
+        <nav class="navbar navbar-expand-md tm-main-nav-container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tmMainNav" aria-controls="tmMainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse tm-main-nav" id="tmMainNav">
+                <ul class="nav nav-fill tm-main-nav-ul">
+                    {% for key,value in main_menu %}
+                    {% set url =  value.link__uri %}
+                    {% set replace_value_var = "internal:/" %}
+                    {% set replace_with_value_var = "" %}
+                    {% set new_url = url|replace({ (replace_value_var): replace_with_value_var }) %}
+
+                    {% if current_path == '/' ~ new_url %}
+                    {% set status = 'active' %}
+                    {% else %}
+                    {% set status = '' %}
+                    {% endif %}
+                    
+                    <li class="nav-item"><a class="nav-link {{ status }}" href="{{ new_url }}">{{ value.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+
+        <img src="{{ directory }}/images/openplc_logo.png"/>
+
+        <!-- Navigation -->
+   
+      <!--End Navigation -->
+
+        
+    </header>
+
+    
+    {% if breadcrumb %}
+        <nav class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">
+            <h2 id="system-breadcrumb" class="visually-hidden">{{ 'Breadcrumb'|t }}</h2>
+
+            <a href="{{ url('<front>') }}">{{ 'Home' }}</a>{{ " > " }}
+
+            {% for item in breadcrumb %}
+                {% if item.url %}
+                <a href="{{ item.url }}">{{ item.text }}</a>{{ " > " }}
+                {% else %}
+                {{ item.text }}
+                {% endif %}
+            {% endfor %}
+        </nav>
+    {% endif %}
+
+
+
+    <div class="tm-main-content">
+
+        <section class="tm-margin-b-l">
+            <header>
+                <h2 class="tm-main-title">{{ node.label }}</h2>    
+            </header>
+            
+            <p>
+                {{ page.content }}    
+            </p>
+            
+
+        </section>  
+        
+        <aside id="sidebar-second" role="complementary" class="sidebar five columns">
+            {{ page.sidebar_second }}
+        </aside>
+            
+    </div>
+
+
+    
+
+
+    <footer>
+
+            <marquee>NOTE: This website will be offline for maintenance and updates from 04:00 AM to 04:30 AM IST. This maintenance happens everyday at the same time.
+                </marquee>
+
+        This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License
+        <br>
+        <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png">
+        <!-- Copyright &copy; <span class="tm-current-year">2018</span> Shelf Company 
+        
+        - Designed by <a href="https://www.facebook.com/tooplate" target="_parent">Tooplate</a> -->
+    </footer>    
+</div>
+
+<!-- load JS files -->
+<script src="js/jquery-1.11.3.min.js"></script>         <!-- jQuery (https://jquery.com/download/) -->
+<script src="js/popper.min.js"></script>                <!-- Popper (https://popper.js.org/) -->
+<script src="js/bootstrap.min.js"></script>             <!-- Bootstrap (https://getbootstrap.com/) -->
+<script src="js/image-slider.js"/>
+
+
+<script>     
+
+    $(document).ready(function(){
+        
+        // Update the current year in copyright
+        $('.tm-current-year').text(new Date().getFullYear());
+
+    });
+
+</script>             

@@ -1,0 +1,39 @@
+bootstrap:
+  version: 1.x
+  css:
+    theme:
+      includes/bootstrap/css/bootstrap.min.css: {}
+  js:
+    includes/bootstrap/js/bootstrap.min.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal.ajax
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+
+global-components:
+  Version: 1.x
+  css:
+    theme:
+      css/bootstrap.min.css: {}
+      css/image-slider.css: {}
+      css/tooplate-style.css: {}
+
+  js:  
+    js/bootstrap.min.js: {}
+    js/image-slider.js: {}
+    js/popper.min.js: {}
+
+  dependencies:
+    - core/jquery
+    - core/drupal.ajax
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+
+fontawesome:
+  version: 1.x
+  css:
+    theme:
+      font-awesome/css/font-awesome.css: {}
