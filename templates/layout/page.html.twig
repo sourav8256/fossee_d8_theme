@@ -60,7 +60,13 @@
 
     <div class="tm-main-content">
 
-        <div id="main-content-section">
+        {% if page.sidebar_second %}
+        {% set content_width = "" %}
+        {% else %}
+        {% set content_width = "width: 100%;" %}
+        {% endif %}
+
+        <div id="main-content-section" style="{{ content_width }}">
             <section class="tm-margin-b-l">
                 <header>
                     <h2 class="tm-main-title">{{ node.label }}</h2>    
