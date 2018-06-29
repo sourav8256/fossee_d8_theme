@@ -229,6 +229,9 @@ button:focus { outline: none; }
 }
 
 .tm-margin-b-l { margin-bottom: 60px; }
+.tm-margin-b-l img {
+	max-width: 100%;
+}
 .tm-margin-b-ll { margin-bottom: 80px; }
 .tm-margin-b-xl { margin-bottom: 100px; }
 .tm-margin-b { margin-bottom: 25px; }
