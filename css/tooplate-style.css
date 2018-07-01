@@ -9,7 +9,9 @@ http://www.tooplate.com/view/2092-shelf
 body {
 	font-family: 'Open Sans', Helvetica, Arial, sans-serif;
 	font-size: 18px;
-	background: url('shelf-bg.jpg');
+	/* background: url('shelf-bg.jpg'); */
+	background: linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%);
+	background: #dedcd9;
 	padding: 0 15px;
 	overflow-x: hidden;
 }
@@ -315,7 +317,7 @@ footer a:hover {
     vertical-align: top;
 }
 
-#sidebar-second h2 {
+#sidebar-second h2,h {
 	font-family: Bitter,Helvetica,Arial,sans-serif;
     background: #214468;
     color: #fff;
