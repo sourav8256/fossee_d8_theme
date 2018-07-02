@@ -335,7 +335,7 @@ footer a:hover {
 /* Responsive Controller */
 
 @media (min-width: 576px) {
-	.tm-main-content { padding: 75px 50px 70px;	}
+	.tm-main-content { padding: 0px 50px 70px;	}
 	.tm-main-content.no-pad-b { padding: 75px 50px 0; }
 	.tm-gallery { max-width: 500px;	}
 	.tm-highlight { padding: 40px; }
