@@ -14,6 +14,7 @@ use Drupal\system\Form\ThemeSettingsForm;
 use Drupal\file\Entity\File;
 use Drupal\Core\Url;
 use Drupal\file\Plugin\Core\Entity\FileInterface;
+use Drupal\Core\Form;
 
 /**
  * Implements hook_preprocess_page() for block templates.
@@ -21,33 +22,37 @@ use Drupal\file\Plugin\Core\Entity\FileInterface;
 
 function fossee_d8_theme_preprocess_page(&$variables) {
 
+  //$parameters = \Drupal::routeMatch()->getParameters();
+  $parameters = \Drupal::service('path.current')->getPath();
+  $parameters = explode("/",$parameters);
+
   $current_path = \Drupal::service('path.current')->getPath();
   
   $current_alias = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);
   $variables['current_path'] = $current_alias;
   $current_uri = \Drupal::request()->getRequestUri();
 
-  if($current_path == '/resources'){
-    $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('resources_title'));
-    $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('resources_content'));
-    $variables['resources_status'] = 'active';
-  } elseif($current_path == '/fellowship'){
-    $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('fellowship_title'));
-    $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('fellowship_content'));
-    $variables['fellowship_status'] = 'active';
-  } elseif($current_path == '/contact'){
-    $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('contact_title'));
-    $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('contact_content'));
-    $variables['contact_status'] = 'active';
-  } elseif($current_path == '/home'){
-    $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_title'));
-    $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_content'));
-    $variables['home_status'] = 'active';
-  } else {
-    $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_title'));
-    $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_content'));
-    $variables['home_status'] = 'active';
-  } 
+  // if($current_path == '/resources'){
+  //   $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('resources_title'));
+  //   $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('resources_content'));
+  //   $variables['resources_status'] = 'active';
+  // } elseif($current_path == '/fellowship'){
+  //   $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('fellowship_title'));
+  //   $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('fellowship_content'));
+  //   $variables['fellowship_status'] = 'active';
+  // } elseif($current_path == '/contact'){
+  //   $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('contact_title'));
+  //   $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('contact_content'));
+  //   $variables['contact_status'] = 'active';
+  // } elseif($current_path == '/home'){
+  //   $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_title'));
+  //   $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_content'));
+  //   $variables['home_status'] = 'active';
+  // } else {
+  //   $variables['title'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_title'));
+  //   $variables['content'] = array('#type'=>'inline_template','#template'=>theme_get_setting('front_content'));
+  //   $variables['home_status'] = 'active';
+  // } 
 
   $connection = \Drupal::database();
   // Get the no of total colleges
@@ -55,7 +60,16 @@ function fossee_d8_theme_preprocess_page(&$variables) {
   $variables['main_menu'] = $query->fetchAll();
 
 
-  if ( 1==1) {
+  /**
+   * fetch images from fossee_slider_images folder and sets the array to a variable
+   */
+
+
+  $slider_images_dir = "public://fossee_slider_images";
+  $variables['slider_image_dir'] = file_create_url($slider_images_dir)."/"; 
+  $variables['slider_images'] = file_scan_directory($slider_images_dir,"//");
+
+  if (1==1) {
     $request = \Drupal::request();
     $route_match = \Drupal::routeMatch();
     $page_title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
@@ -104,101 +118,256 @@ function fossee_d8_theme_preprocess_breadcrumb(&$variables) {
  */
 function fossee_d8_theme_form_system_theme_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state) {
 
-  $form['fossee_d8_theme_settings']['front'] = array(
-    '#type' => 'details',
-    '#title' => t('Front Page'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
 
-  $form['fossee_d8_theme_settings']['front']['front_title'] = array(
-    '#type' => 'textfield',
-    '#title' => t("Title"),
-    '#default_value' => theme_get_setting('front_title'),
-    '#description'   => t("The content for the introduction page"),
-  );
+  createSliderImageForm($form,$form_state);
 
-  $form['fossee_d8_theme_settings']['front']['front_content'] = array(
-    '#type' => 'textarea',
-    '#title' => t("Content"),
-    '#default_value' => theme_get_setting('front_content'),
-    '#description'   => t("The content for the introduction page"),
-  );
-
-
-
-
-  $form['fossee_d8_theme_settings']['resources'] = array(
-    '#type' => 'details',
-    '#title' => t('Resources page'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-
-  $form['fossee_d8_theme_settings']['resources']['resources_title'] = array(
-    '#type' => 'textfield',
-    '#title' => t("Title"),
-    '#default_value' => theme_get_setting('resources_title'),
-    '#description'   => t("The title for the resources page"),
-  );
-
-  $form['fossee_d8_theme_settings']['resources']['resources_content'] = array(
-    '#type' => 'textarea',
-    '#title' => t("Content"),
-    '#default_value' => theme_get_setting('resources_content'),
-    '#description'   => t("The content for the introduction page"),
+  $slider_images_dir = "public://fossee_slider_images";
+  
+  if (!is_dir($slider_images_dir)) {
+    if (drupal_mkdir($slider_images_dir, NULL, TRUE, NULL)) {
+    } else {
+        drupal_set_message(t("Failure : could not create directory"), "error");
+    }
+  } else {
+  }
+ 
+  $form['image'] = array(
+    '#type'          => 'managed_file',
+    '#title'         => t('Slider Image'),
+    '#upload_location' => $slider_images_dir,
+    '#default_value' => '',
+    '#description'   => t('Please browse the slider image and "Save configuration".'),
+    '#states'        => array(
+      'visible'      => array(
+        ':input[name="image_type"]' => array('value' => t('Upload New Image(s)')),
+      ),
+    ),
   );
 
 
 
+  // $form['sites'] = array( // renders chckboxes with corresponding list of sites that the user can select to include in the list of allowed sites
+  //   '#title' => t('Allowed Sites'),
+  //   '#type' => 'checkboxes',
+  //   '#description' => t('Select the sites you would like to display this  banner on.'),
+  //   '#options' => array(),
+  //   //'#default_value' => $allowed_sites,
+  // );
 
-  $form['fossee_d8_theme_settings']['fellowship'] = array(
-    '#type' => 'details',
-    '#title' => t('Fellowship page'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-
-  $form['fossee_d8_theme_settings']['fellowship']['fellowship_title'] = array(
-    '#type' => 'textfield',
-    '#title' => t("Title page"),
-    '#default_value' => theme_get_setting('fellowship_title'),
-    '#description'   => t("The title for the fellowship page"),
-  );
-
-  $form['fossee_d8_theme_settings']['fellowship']['fellowship_content'] = array(
-    '#type' => 'textarea',
-    '#title' => t("Content page"),
-    '#default_value' => theme_get_setting('fellowship_content'),
-    '#description'   => t("The content for the fellowship page"),
-  );
-
-
-
-
-
-  $form['fossee_d8_theme_settings']['contact'] = array(
-    '#type' => 'details',
-    '#title' => t('Contact page'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-
-  $form['fossee_d8_theme_settings']['contact']['contact_title'] = array(
-    '#type' => 'textfield',
-    '#title' => t("Title"),
-    '#default_value' => theme_get_setting('contact_title'),
-    '#description'   => t("The title for the contact page"),
-  );
-
-  $form['fossee_d8_theme_settings']['contact']['contact_content'] = array(
-    '#type' => 'textarea',
-    '#title' => t("Content"),
-    '#default_value' => theme_get_setting('contact_content'),
-    '#description'   => t("The content for the contact page"),
-  );
 
 
   
 
+
+
+
+  // $form['fossee_d8_theme_settings']['front'] = array(
+  //   '#type' => 'details',
+  //   '#title' => t('Front Page'),
+  //   '#collapsible' => TRUE,
+  //   '#collapsed' => FALSE,
+  // );
+
+  // $form['fossee_d8_theme_settings']['front']['front_title'] = array(
+  //   '#type' => 'textfield',
+  //   '#title' => t("Title"),
+  //   '#default_value' => theme_get_setting('front_title'),
+  //   '#description'   => t("The content for the introduction page"),
+  // );
+
+  // $form['fossee_d8_theme_settings']['front']['front_content'] = array(
+  //   '#type' => 'textarea',
+  //   '#title' => t("Content"),
+  //   '#default_value' => theme_get_setting('front_content'),
+  //   '#description'   => t("The content for the introduction page"),
+  // );
+
+
+
+
+  // $form['fossee_d8_theme_settings']['resources'] = array(
+  //   '#type' => 'details',
+  //   '#title' => t('Resources page'),
+  //   '#collapsible' => TRUE,
+  //   '#collapsed' => FALSE,
+  // );
+
+  // $form['fossee_d8_theme_settings']['resources']['resources_title'] = array(
+  //   '#type' => 'textfield',
+  //   '#title' => t("Title"),
+  //   '#default_value' => theme_get_setting('resources_title'),
+  //   '#description'   => t("The title for the resources page"),
+  // );
+
+  // $form['fossee_d8_theme_settings']['resources']['resources_content'] = array(
+  //   '#type' => 'textarea',
+  //   '#title' => t("Content"),
+  //   '#default_value' => theme_get_setting('resources_content'),
+  //   '#description'   => t("The content for the introduction page"),
+  // );
+
+
+
+
+  // $form['fossee_d8_theme_settings']['fellowship'] = array(
+  //   '#type' => 'details',
+  //   '#title' => t('Fellowship page'),
+  //   '#collapsible' => TRUE,
+  //   '#collapsed' => FALSE,
+  // );
+
+  // $form['fossee_d8_theme_settings']['fellowship']['fellowship_title'] = array(
+  //   '#type' => 'textfield',
+  //   '#title' => t("Title page"),
+  //   '#default_value' => theme_get_setting('fellowship_title'),
+  //   '#description'   => t("The title for the fellowship page"),
+  // );
+
+  // $form['fossee_d8_theme_settings']['fellowship']['fellowship_content'] = array(
+  //   '#type' => 'textarea',
+  //   '#title' => t("Content page"),
+  //   '#default_value' => theme_get_setting('fellowship_content'),
+  //   '#description'   => t("The content for the fellowship page"),
+  // );
+
+
+
+
+
+  // $form['fossee_d8_theme_settings']['contact'] = array(
+  //   '#type' => 'details',
+  //   '#title' => t('Contact page'),
+  //   '#collapsible' => TRUE,
+  //   '#collapsed' => FALSE,
+  // );
+
+  // $form['fossee_d8_theme_settings']['contact']['contact_title'] = array(
+  //   '#type' => 'textfield',
+  //   '#title' => t("Title"),
+  //   '#default_value' => theme_get_setting('contact_title'),
+  //   '#description'   => t("The title for the contact page"),
+  // );
+
+  // $form['fossee_d8_theme_settings']['contact']['contact_content'] = array(
+  //   '#type' => 'textarea',
+  //   '#title' => t("Content"),
+  //   '#default_value' => theme_get_setting('contact_content'),
+  //   '#description'   => t("The content for the contact page"),
+  // );
+
+
+  $form['#submit'][] = "alter_submit_hook";
+  //$form['#submit'][] = "delete_slider_image";
+
+}
+
+
+function createSliderImageForm(&$form, \Drupal\Core\Form\FormStateInterface $form_state){
+  $slider_images_dir = "public://fossee_slider_images";
+  $slider_image_url = file_create_url($slider_images_dir)."/"; 
+  $slider_images = file_scan_directory($slider_images_dir,"//");
+
+  $form['slider_images'] = array(
+    '#type' => 'details',
+    '#title' => t('Slider Images'),
+    //'#collapsible' => TRUE,
+    //'#collapsed' => FALSE,
+    '#open' => TRUE,
+    '#prefix' => '<div id="ajax_wrapper">',
+    '#suffix' => '</div>'
+  );
+
+  $i = 0;
+
+  foreach($slider_images as $slider_image){
+
+    $form['slider_images']["slider_form_".$i]['image_path'] = array(
+      '#type' => 'hidden',
+      '#markup' => $slider_images_dir.'/'.$slider_image->filename,
+    );
+
+    $form['slider_images']["slider_form_".$i]['image'] = array(
+      '#type' => 'inline_template',
+      '#template' => "<div style='margin : 20px;'><img style='height:100px; width:250px;' src='".$slider_image_url.$slider_image->filename."' >",
+    );
+
+    $form['slider_images']["slider_form_".$i]['checkbox'.$i] = array(
+      '#type' =>'checkbox', 
+      '#title' => t('Select to delete'),
+      '#default_value' => $form_state->getValue('checkbox'.$i),
+      '#suffix' => '</div><br>',
+      // '#ajax'   => array(
+      //   'callback'=> 'delete_slider_image',
+      //   'wrapper' => 'ajax_wrapper',
+      //   'effect'  => 'fade',
+      // ),
+    );
+
+    //$form['slider_images']["slider_form_".$i]['#submit'] = "delete_slider_image";
+
+    $i++;
+
+  }
+
+  $form['slider_images2']['checkbox_submit'] = array(
+    '#type' =>'submit', 
+    '#value' => t('Delete Selected'),
+    //'#field_suffix' => '<img src="myimg.png" />',
+    '#name' => 'delete_selected',
+    '#suffix' => '</div><br>',
+    '#submit' => array('delete_slider_image'),
+      '#ajax'   => array(
+        'callback'=> 'delete_slider_image_callback',
+        'wrapper' => 'ajax_wrapper',
+        'effect'  => 'fade',
+    ),
+  );
+
+  $form_state->set('slider_images_count',$i);
+
+  
+}
+
+
+function alter_submit_hook(&$form, \Drupal\Core\Form\FormStateInterface $form_state){
+
+  $image = $form_state->getValue('image');
+  if($image){
+    $file = File::load( $image[0] );
+    $file->setPermanent();
+    $file->save();
+  }
+
+}
+
+function delete_slider_image(&$form, \Drupal\Core\Form\FormStateInterface $form_state){
+
+
+  $slider_images_count = $form_state->get('slider_images_count');
+
+  for($i=0;$i<$slider_images_count;$i++){
+
+
+    if($form_state->getValue('checkbox'.$i)){
+      if(file_unmanaged_delete($form['slider_images']["slider_form_".$i]['image_path']['#markup'])){ 
+        dpm('Deleted '.$form['slider_images']["slider_form_".$i]['image_path']['#markup']);
+      }
+
+    }
+
+    $form_state->setValue('checkbox'.$i,0);
+
+  }
+
+
+
+  $form_state->setRebuild();
+
+}
+
+
+
+function delete_slider_image_callback(&$form, \Drupal\Core\Form\FormStateInterface $form_state){
+
+  return $form['slider_images'];
 }
