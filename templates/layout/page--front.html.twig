@@ -46,7 +46,7 @@
            
             {% set i = 1 %}
             {% for slide in slider_images%}
-            <div class="slides fade">
+            <div class="slides fade" style="display: none">
             <div class="numbertext">{{ i }} / {{ slider_images|length}}</div>
             <img class="sliderImage" src="{{ slider_image_dir ~ slide.filename }}">
             <div class="text"></div>
